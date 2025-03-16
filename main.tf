@@ -4,7 +4,7 @@ provider "aws" {
 
 resource "aws_instance" "vm" {
   ami           = "ami-00c257e12d6828491" # Ubuntu AMI (update as needed)
-  instance_type = "t3.micro"
+  instance_type = "t2.micro"
 
   tags = {
     Name = "GitHubActions-VM"
