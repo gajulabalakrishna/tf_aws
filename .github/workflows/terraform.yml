@@ -48,5 +48,5 @@ jobs:
         run: |
           echo "INSTANCE_IP=$(terraform output -raw instance_ip)" >> $GITHUB_ENV
 
-      - name: Show EC2 Instance IP
-        run: echo "EC2 Instance Public IP: $INSTANCE_IP"
+     # - name: Show EC2 Instance IP
+      #  run: echo "EC2 Instance Public IP: $INSTANCE_IP"
