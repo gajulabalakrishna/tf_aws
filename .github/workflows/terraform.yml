@@ -42,55 +42,55 @@
 #       with:
 #         cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
 
-name: 'Terraform'
+name: Deploy AWS EC2 machine with Terraform
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-
-permissions:
-  contents: read
+    branches:
+      - main
 
 jobs:
   terraform:
-    name: 'Terraform'
+    name: Terraform Apply
     runs-on: ubuntu-latest
-    environment: production
-
-    # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
-    defaults:
-      run:
-        shell: bash
 
     steps:
-    # Checkout the repository to the GitHub Actions runner
-    - name: Checkout
-      uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v3
 
-    # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v1
-      with:
-        cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
 
-    # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
-    - name: Terraform Init
-      run: terraform init
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
 
-    # Checks that all Terraform configuration files adhere to a canonical format
-    - name: Terraform Format
-      run: terraform fmt -check
+      - name: Initialize Terraform
+        run: terraform init
 
-    # Generates an execution plan for Terraform
-    - name: Terraform Plan
-      run: terraform plan -input=false
+      - name: Validate Terraform
+        run: terraform validate
 
-      # On push to "main", build or change infrastructure according to Terraform configuration files
-      # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
-    - name: Terraform Apply
-      if: github.ref == 'refs/heads/"main"' && github.event_name == 'push'
-      run: terraform apply -auto-approve -input=false
-      #it will give the output 
-    - name: Set output
-      run: echo "{name}={value}" >> $GITHUB_OUTPUT
+      - name: Terraform Plan
+        run: terraform plan -out=tfplan
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve tfplan
+
+      - name: Capture Terraform Outputs
+        id: tf_output
+        run: echo "$(terraform output -json)" > tf_outputs.json
+
+      - name: Display Terraform Outputs
+        run: cat tf_outputs.json
+
+      - name: Save EC2 Instance IP
+        id: save_outputs
+        run: |
+          echo "INSTANCE_IP=$(terraform output -raw instance_ip)" >> $GITHUB_ENV
+
+      - name: Show EC2 Instance IP
+        run: echo "EC2 Instance Public IP: $INSTANCE_IP"
