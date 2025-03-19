@@ -4,7 +4,7 @@ on:
 jobs:
   terraform:
     name: Terraform Deploy
-    runs-on: Ubumtu-latest 
+    runs-on: Ubuntu-latest 
 
     steps:
       - uses: actions/checkout@v4
