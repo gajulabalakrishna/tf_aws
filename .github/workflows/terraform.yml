@@ -1,52 +1,22 @@
-name: Deploy AWS VM with Terraform
-
+name : to create a Instance and VPC setup in AWS environment 
 on:
   push:
     branches:
       - main
-
+      - workflow_dispatch
 jobs:
   terraform:
-    name: Terraform Apply
-    runs-on: ubuntu-latest
+    name: Terraform Deploy
+    runs-on: Ubumtu-latest 
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
-
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v2
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+      - uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-2
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v1
-
-      - name: Initialize Terraform
-        run: terraform init
-
-      - name: Validate Terraform
-        run: terraform validate
-
-      - name: Terraform Plan
-        run: terraform plan -out=tfplan
-
-      - name: Terraform Apply
-        run: terraform apply -auto-approve tfplan
-
-      - name: Capture Terraform Outputs
-        id: tf_output
-        run: echo "$(terraform output -json)" > tf_outputs.json
-
-      - name: Display Terraform Outputs
-        run: cat tf_outputs.json
-
-      # - name: Save EC2 Instance IP
-      #   id: save_outputs
-      #   run: |
-      #     echo "INSTANCE_IP=$(terraform output -raw instance_ip)" >> $GITHUB_ENV
-
-     # - name: Show EC2 Instance IP
-     #   run: echo "EC2 Instance Public IP: $INSTANCE_IP"
+          aws-access-key-id: ${{secrets.AWS_ACCESS_KEY_ID}}
+          aws-secret-access-key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+          aws-region: us-east-1
+      - run: terraform init
+      - run: terraform plan 
+      - run: terraform apply -auto-approve
