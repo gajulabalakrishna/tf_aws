@@ -1,9 +1,6 @@
 name : to create a Instance and VPC setup in AWS environment 
 on:
-  push:
-    branches:
-      - main
-      - workflow_dispatch
+  workflow_dispatch
 jobs:
   terraform:
     name: Terraform Deploy
