@@ -259,21 +259,6 @@ bash
 Copy
 Edit
 terraform destroy -auto-approve
-Conclusion
-You have successfully created an AWS EKS cluster using Terraform. This setup is scalable, automated, and allows seamless Kubernetes management on AWS.
-
-Would you like additional configurations such as autoscaling, monitoring, or service mesh? 🚀
-
-
-
-
-
-
-
-
-You said:
-create load balancer using terraform code  
-ChatGPT said:
 To create a Load Balancer using Terraform, we will use AWS Application Load Balancer (ALB) with an Auto Scaling Group (ASG). Below is a complete Terraform setup.
 
 Prerequisites
